@@ -8,66 +8,80 @@
 <style>
   #draggable {
     touch-action: none;
+    user-select: none;
   }
 </style>
 </head>
 <body class="bg-black text-white h-screen flex items-center justify-center overflow-hidden">
-
 <div id="draggable" class="cursor-move">
-  <img src="images/mercy.png" alt="Draggable Character" class="w-48 h-48">
+  <img src="images/mercy.png" alt="Draggable character" draggable="false" class="w-32 h-32">
+</div>
+<div id="floatingText" class="absolute top-0 left-0">
+  James
 </div>
 
-<div id="floatingText" class="absolute text-2xl">James</div>
-
 <script>
-  const draggable = document.querySelector('#draggable');
-  const floatingText = document.querySelector('#floatingText');
-  let posX = 100, posY = 100;
-  let dirX = 1, dirY = 1;
-  let speed = 2;
+  const draggable = document.getElementById('draggable');
+  const floatingText = document.getElementById('floatingText');
+  let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
-  function moveFloatingText() {
-    if (posX + floatingText.offsetWidth >= window.innerWidth || posX <= 0) {
-      dirX *= -1;
-    }
-    if (posY + floatingText.offsetHeight >= window.innerHeight || posY <= 0) {
-      dirY *= -1;
-    }
-    posX += dirX * speed;
-    posY += dirY * speed;
-    floatingText.style.transform = `translate(${posX}px, ${posY}px)`;
-  }
-
-  setInterval(moveFloatingText, 20);
-
-  draggable.addEventListener('pointerdown', dragStart);
-
-  function dragStart(e) {
+  function handleDrag(e) {
     e.preventDefault();
-    window.addEventListener('pointermove', dragging);
-    window.addEventListener('pointerup', dragEnd);
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleDrop);
   }
 
-  function dragging(e) {
-    draggable.style.transform = `translate(${e.clientX - 50}px, ${e.clientY - 50}px)`;
-    checkCollision(e.clientX, e.clientY);
+  function handleMove(e) {
+    const dx = e.clientX - mouseX;
+    const dy = e.clientY - mouseY;
+    posX += dx;
+    posY += dy;
+    draggable.style.transform = `translate(${posX}px, ${posY}px)`;
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    checkCollision();
   }
 
-  function dragEnd() {
-    window.removeEventListener('pointermove', dragging);
-    window.removeEventListener('pointerup', dragEnd);
+  function handleDrop() {
+    document.removeEventListener('mousemove', handleMove);
+    document.removeEventListener('mouseup', handleDrop);
   }
 
-  function checkCollision(x, y) {
+  draggable.addEventListener('mousedown', handleDrag);
+
+  function checkCollision() {
+    const draggableRect = draggable.getBoundingClientRect();
     const textRect = floatingText.getBoundingClientRect();
-    if (x > textRect.left && x < textRect.right && y > textRect.top && y < textRect.bottom) {
+    if (!(draggableRect.right < textRect.left || 
+          draggableRect.left > textRect.right || 
+          draggableRect.bottom < textRect.top || 
+          draggableRect.top > textRect.bottom)) {
       floatingText.textContent = 'DEAD';
       setTimeout(() => {
         floatingText.style.display = 'none';
       }, 500);
     }
   }
-</script>
 
+  // Bouncing text animation
+  let textPosX = 0, textPosY = 0, textSpeedX = 2, textSpeedY = 2;
+
+  function animateText() {
+    textPosX += textSpeedX;
+    textPosY += textSpeedY;
+    if (textPosX <= 0 || textPosX + floatingText.offsetWidth >= window.innerWidth) {
+      textSpeedX *= -1;
+    }
+    if (textPosY <= 0 || textPosY + floatingText.offsetHeight >= window.innerHeight) {
+      textSpeedY *= -1;
+    }
+    floatingText.style.transform = `translate(${textPosX}px, ${textPosY}px)`;
+    requestAnimationFrame(animateText);
+  }
+
+  animateText();
+</script>
 </body>
 </html>
