@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Draggable Image</title>
+    <title>Your favorite Mercy game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         #floating-text {
@@ -67,9 +67,11 @@
         let x = 0, y = 0, vx = 2, vy = 2;
         function animate() {
             requestAnimationFrame(animate);
-            
-            x += vx;
-            y += vy;
+        
+            // Update x and y based on the position of the draggable element
+            const rect = draggable.getBoundingClientRect();
+            x = rect.x + posX;
+            y = rect.y + posY;
         
             // Check if the text is going out of the horizontal boundaries
             if (x <= 0) {
@@ -91,6 +93,7 @@
         
             floatingText.style.transform = `translate(${x}px, ${y}px)`;
         }
+
 
         animate();
     </script>
