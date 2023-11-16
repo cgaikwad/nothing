@@ -61,13 +61,14 @@
             draggable.style.transform = 'translate(0px, 0px)';
             
             // Center the floating text
-            x = window.innerWidth / 2 - floatingText.offsetWidth / 2;
-            y = window.innerHeight / 2 - floatingText.offsetHeight / 2;
+            x = (window.innerWidth - floatingText.offsetWidth) / 2;
+            y = (window.innerHeight - floatingText.offsetHeight) / 2;
             
             floatingText.style.transform = `translate(${x}px, ${y}px)`;
             floatingText.textContent = 'James';
             floatingText.style.backgroundColor = 'gray';
         });
+
 
 
         // Floating text animation
