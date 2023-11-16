@@ -1,87 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Interactive Image and Text</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-  #draggable {
-    touch-action: none;
-    user-select: none;
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Draggable Image</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        #floating-text {
+            transition: background-color 0.3s;
+        }
+    </style>
 </head>
-<body class="bg-black text-white h-screen flex items-center justify-center overflow-hidden">
-<div id="draggable" class="cursor-move">
-  <img src="images/mercy.png" alt="Draggable character" draggable="false" class="w-32 h-32">
-</div>
-<div id="floatingText" class="absolute top-0 left-0">
-  James
-</div>
+<body class="bg-black text-white h-screen overflow-hidden flex items-center justify-center">
+    <div id="draggable" class="cursor-move" draggable="true">
+        <img src="images/mercy.png" alt="Draggable Image" class="pointer-events-none" />
+    </div>
+    <div id="floating-text" class="absolute p-4 rounded shadow-lg bg-gray-800 text-white">
+        James
+    </div>
+    <button id="reset" class="absolute bottom-10 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
+        Reset
+    </button>
 
-<script>
-  const draggable = document.getElementById('draggable');
-  const floatingText = document.getElementById('floatingText');
-  let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+    <script>
+        const draggable = document.getElementById('draggable');
+        const floatingText = document.getElementById('floating-text');
+        const resetButton = document.getElementById('reset');
 
-  function handleDrag(e) {
-    e.preventDefault();
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    document.addEventListener('mousemove', handleMove);
-    document.addEventListener('mouseup', handleDrop);
-  }
+        let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
 
-  function handleMove(e) {
-    const dx = e.clientX - mouseX;
-    const dy = e.clientY - mouseY;
-    posX += dx;
-    posY += dy;
-    draggable.style.transform = `translate(${posX}px, ${posY}px)`;
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-    checkCollision();
-  }
+        draggable.addEventListener('dragstart', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
 
-  function handleDrop() {
-    document.removeEventListener('mousemove', handleMove);
-    document.removeEventListener('mouseup', handleDrop);
-  }
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            const dx = e.clientX - mouseX;
+            const dy = e.clientY - mouseY;
+            posX += dx;
+            posY += dy;
+            draggable.style.transform = `translate(${posX}px, ${posY}px)`;
+            mouseX = e.clientX;
+            mouseY = e.clientY;
 
-  draggable.addEventListener('mousedown', handleDrag);
+            const rect = draggable.getBoundingClientRect();
+            const textRect = floatingText.getBoundingClientRect();
+            if (rect.x < textRect.x + textRect.width &&
+                rect.x + rect.width > textRect.x &&
+                rect.y < textRect.y + textRect.height &&
+                rect.y + rect.height > textRect.y) {
+                floatingText.textContent = 'DEAD';
+                floatingText.style.backgroundColor = 'red';
+            }
+        });
 
-  function checkCollision() {
-    const draggableRect = draggable.getBoundingClientRect();
-    const textRect = floatingText.getBoundingClientRect();
-    if (!(draggableRect.right < textRect.left || 
-          draggableRect.left > textRect.right || 
-          draggableRect.bottom < textRect.top || 
-          draggableRect.top > textRect.bottom)) {
-      floatingText.textContent = 'DEAD';
-      setTimeout(() => {
-        floatingText.style.display = 'none';
-      }, 500);
-    }
-  }
+        resetButton.addEventListener('click', () => {
+            posX = 0;
+            posY = 0;
+            draggable.style.transform = 'translate(0px, 0px)';
+            floatingText.textContent = 'James';
+            floatingText.style.backgroundColor = 'gray';
+        });
 
-  // Bouncing text animation
-  let textPosX = 0, textPosY = 0, textSpeedX = 2, textSpeedY = 2;
-
-  function animateText() {
-    textPosX += textSpeedX;
-    textPosY += textSpeedY;
-    if (textPosX <= 0 || textPosX + floatingText.offsetWidth >= window.innerWidth) {
-      textSpeedX *= -1;
-    }
-    if (textPosY <= 0 || textPosY + floatingText.offsetHeight >= window.innerHeight) {
-      textSpeedY *= -1;
-    }
-    floatingText.style.transform = `translate(${textPosX}px, ${textPosY}px)`;
-    requestAnimationFrame(animateText);
-  }
-
-  animateText();
-</script>
+        // Floating text animation
+        let x = 0, y = 0, vx = 2, vy = 2;
+        function animate() {
+            requestAnimationFrame(animate);
+            x += vx;
+            y += vy;
+            if (x <= 0 || x + floatingText.offsetWidth >= window.innerWidth) {
+                vx *= -1;
+            }
+            if (y <= 0 || y + floatingText.offsetHeight >= window.innerHeight) {
+                vy *= -1;
+            }
+            floatingText.style.transform = `translate(${x}px, ${y}px)`;
+        }
+        animate();
+    </script>
 </body>
 </html>
