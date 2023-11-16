@@ -6,28 +6,52 @@
     <title>Your favorite Mercy game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        #container {
+            width: 1900px;
+            height: 1200px;
+            position: relative;
+            overflow: hidden;
+            background-color: #333; /* Set the background color of the container */
+        }
+
+        #draggable {
+            cursor: move;
+            position: absolute;
+        }
+
+        #draggable img {
+            pointer-events: none;
+        }
+
         #floating-text {
             transition: background-color 0.3s;
+            position: absolute;
         }
     </style>
 </head>
 <body class="bg-black text-white h-screen overflow-hidden flex items-center justify-center">
-    <div id="draggable" class="cursor-move" draggable="true">
-        <img src="images/mercy.png" alt="Draggable Image" class="pointer-events-none" />
-    </div>
-    <div id="floating-text" class="absolute p-4 rounded shadow-lg bg-gray-800 text-white">
-        James
+    <div id="container">
+        <div id="draggable" draggable="true">
+            <img src="images/mercy.png" alt="Draggable Image" />
+        </div>
+        <div id="floating-text" class="p-4 rounded shadow-lg bg-gray-800 text-white">
+            James
+        </div>
     </div>
     <button id="reset" class="absolute bottom-10 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
         Reset
     </button>
 
     <script>
+        const container = document.getElementById('container');
         const draggable = document.getElementById('draggable');
         const floatingText = document.getElementById('floating-text');
         const resetButton = document.getElementById('reset');
 
         let posX = 0, posY = 0, mouseX = 0, mouseY = 0;
+        let x = (container.offsetWidth - floatingText.offsetWidth) / 2;
+        let y = (container.offsetHeight - floatingText.offsetHeight) / 2;
+        let vx = 2, vy = 2;
 
         draggable.addEventListener('dragstart', (e) => {
             mouseX = e.clientX;
@@ -36,57 +60,62 @@
 
         document.addEventListener('dragover', (e) => {
             e.preventDefault();
+            const rect = container.getBoundingClientRect();
             const dx = e.clientX - mouseX;
             const dy = e.clientY - mouseY;
             posX += dx;
             posY += dy;
+
+            // Check and adjust the position to stay within the container boundaries
+            posX = Math.max(0, Math.min(posX, rect.width - draggable.offsetWidth));
+            posY = Math.max(0, Math.min(posY, rect.height - draggable.offsetHeight));
+
             draggable.style.transform = `translate(${posX}px, ${posY}px)`;
             mouseX = e.clientX;
             mouseY = e.clientY;
 
-            const rect = draggable.getBoundingClientRect();
+            const draggableRect = draggable.getBoundingClientRect();
             const textRect = floatingText.getBoundingClientRect();
-            if (rect.x < textRect.x + textRect.width &&
-                rect.x + rect.width > textRect.x &&
-                rect.y < textRect.y + textRect.height &&
-                rect.y + rect.height > textRect.y) {
+            if (draggableRect.x < textRect.x + textRect.width &&
+                draggableRect.x + draggableRect.width > textRect.x &&
+                draggableRect.y < textRect.y + textRect.height &&
+                draggableRect.y + draggableRect.height > textRect.y) {
                 floatingText.textContent = 'DEAD';
                 floatingText.style.backgroundColor = 'red';
             }
         });
 
         resetButton.addEventListener('click', () => {
-
+            posX = 0;
+            posY = 0;
             draggable.style.transform = 'translate(0px, 0px)';
             
-            floatingText.style.transform = 'translate(0px, 0px)';
+            // Center the floating text within the container
+            x = (container.offsetWidth - floatingText.offsetWidth) / 2;
+            y = (container.offsetHeight - floatingText.offsetHeight) / 2;
+            
+            floatingText.style.transform = `translate(${x}px, ${y}px)`;
             floatingText.textContent = 'James';
             floatingText.style.backgroundColor = 'gray';
         });
 
-
-
         // Floating text animation
-        let x = 0, y = 0, vx = 2, vy = 2;
-       function animate() {
+        function animate() {
             requestAnimationFrame(animate);
-        
+
             x += vx;
             y += vy;
-        
-            // Check if the text is going out of the horizontal boundaries
-            if (x <= 0 || x + floatingText.offsetWidth >= window.innerWidth) {
+
+            // Check and adjust the position to bounce off the container borders
+            if (x <= 0 || x + floatingText.offsetWidth >= container.offsetWidth) {
                 vx *= -1;
             }
-        
-            // Check if the text is going out of the vertical boundaries
-            if (y <= 0 || y + floatingText.offsetHeight >= window.innerHeight) {
+            if (y <= 0 || y + floatingText.offsetHeight >= container.offsetHeight) {
                 vy *= -1;
             }
-        
+
             floatingText.style.transform = `translate(${x}px, ${y}px)`;
         }
-
 
         animate();
     </script>
