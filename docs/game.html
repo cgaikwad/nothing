@@ -56,15 +56,10 @@
         });
 
         resetButton.addEventListener('click', () => {
-            posX = 0;
-            posY = 0;
+
             draggable.style.transform = 'translate(0px, 0px)';
             
-            // Center the floating text
-            x = (window.innerWidth - floatingText.offsetWidth) / 2;
-            y = (window.innerHeight - floatingText.offsetHeight) / 2;
-            
-            floatingText.style.transform = `translate(${x}px, ${y}px)`;
+            floatingText.style.transform = 'translate(0px, 0px)';
             floatingText.textContent = 'James';
             floatingText.style.backgroundColor = 'gray';
         });
