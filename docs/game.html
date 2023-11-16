@@ -65,13 +65,11 @@
 
         // Floating text animation
         let x = 0, y = 0, vx = 2, vy = 2;
-        function animate() {
+       function animate() {
             requestAnimationFrame(animate);
         
-            // Update x and y based on the position of the draggable element
-            const rect = draggable.getBoundingClientRect();
-            x = rect.x + posX;
-            y = rect.y + posY;
+            x += vx;
+            y += vy;
         
             // Check if the text is going out of the horizontal boundaries
             if (x <= 0) {
@@ -93,8 +91,6 @@
         
             floatingText.style.transform = `translate(${x}px, ${y}px)`;
         }
-
-
         animate();
     </script>
 </body>
