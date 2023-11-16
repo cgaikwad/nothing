@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Draggable Image</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  /* Additional styles if needed */
+  #draggable {
+    touch-action: none;
+    user-select: none;
+  }
+  #floatingText {
+    position: absolute;
+    user-select: none;
+  }
+</style>
+</head>
+<body class="bg-black overflow-hidden">
+
+<!-- Draggable image -->
+<img id="draggable" src="images/mercy.png" class="w-36 h-36 absolute cursor-move" alt="Draggable character" />
+
+<!-- Floating text -->
+<div id="floatingText" class="text-white p-2 bg-gray-800 rounded">
+  James
+</div>
+
+<!-- Dead text (hidden by default) -->
+<div id="deadText" class="text-white text-4xl font-bold p-2 bg-red-600 rounded absolute hidden">
+  DEAD
+</div>
+
+<script>
+  // Draggable image logic
+  const draggable = document.getElementById('draggable');
+  let active = false;
+  let currentX;
+  let currentY;
+  let initialX;
+  let initialY;
+  let xOffset = 0;
+  let yOffset = 0;
+
+  draggable.addEventListener('mousedown', dragStart, false);
+  document.addEventListener('mouseup', dragEnd, false);
+  document.addEventListener('mousemove', drag, false);
+
+  draggable.addEventListener('touchstart', dragStart, false);
+  document.addEventListener('touchend', dragEnd, false);
+  document.addEventListener('touchmove', drag, false);
+
+  function dragStart(e) {
+    if (e.type === 'touchstart') {
+      initialX = e.touches[0].clientX - xOffset;
+      initialY = e.touches[0].clientY - yOffset;
+    } else {
+      initialX = e.clientX - xOffset;
+      initialY = e.clientY - yOffset;
+    }
+    if (e.target === draggable) {
+      active = true;
+    }
+  }
+
+  function dragEnd(e) {
+    initialX = currentX;
+    initialY = currentY;
+    active = false;
+    checkCollision();
+  }
+
+  function drag(e) {
+    if (active) {
+      e.preventDefault();
+      if (e.type === 'touchmove') {
+        currentX = e.touches[0].clientX - initialX;
+        currentY = e.touches[0].clientY - initialY;
+      } else {
+        currentX = e.clientX - initialX;
+        currentY = e.clientY - initialY;
+      }
+      xOffset = currentX;
+      yOffset = currentY;
+      setTranslate(currentX, currentY, draggable);
+    }
+  }
+
+  function setTranslate(xPos, yPos, el) {
+    el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0)`;
+  }
+
+  // Floating text logic
+  const floatingText = document.getElementById('floatingText');
+  const deadText = document.getElementById('deadText');
+  let angle = 0;
+
+  function floatText() {
+    angle += 0.01;
+    const radius = 150;
+    const x = Math.sin(angle) * radius;
+    const y = Math.cos(angle) * radius;
+    floatingText.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+    requestAnimationFrame(floatText);
+  }
+  floatText();
+
+  // Collision detection
+  function checkCollision() {
+    const draggableRect = draggable.getBoundingClientRect();
+    const floatingTextRect = floatingText.getBoundingClientRect();
+    if (draggableRect.x < floatingTextRect.x + floatingTextRect.width &&
+        draggableRect.x + draggableRect.width > floatingTextRect.x &&
+        draggableRect.y < floatingTextRect.y + floatingTextRect.height &&
+        draggableRect.y + draggableRect.height > floatingTextRect.y) {
+      deadText.style.left = `${window.innerWidth / 2 - 50}px`;
+      deadText.style.top = `${window.innerHeight / 2 - 50}px`;
+      deadText.classList.remove('hidden');
+    }
+  }
+</script>
+
+</body>
+</html>
