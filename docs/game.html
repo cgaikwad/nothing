@@ -79,25 +79,18 @@
             y += vy;
         
             // Check if the text is going out of the horizontal boundaries
-            if (x <= 0) {
-                x = 0;
-                vx *= -1;
-            } else if (x + floatingText.offsetWidth >= window.innerWidth) {
-                x = window.innerWidth - floatingText.offsetWidth;
+            if (x <= 0 || x + floatingText.offsetWidth >= window.innerWidth) {
                 vx *= -1;
             }
         
             // Check if the text is going out of the vertical boundaries
-            if (y <= 0) {
-                y = 0;
-                vy *= -1;
-            } else if (y + floatingText.offsetHeight >= window.innerHeight) {
-                y = window.innerHeight - floatingText.offsetHeight;
+            if (y <= 0 || y + floatingText.offsetHeight >= window.innerHeight) {
                 vy *= -1;
             }
         
             floatingText.style.transform = `translate(${x}px, ${y}px)`;
         }
+
 
         animate();
     </script>
