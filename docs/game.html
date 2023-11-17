@@ -41,6 +41,7 @@
     <button id="reset" class="absolute bottom-10 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded">
         Reset
     </button>
+    <audio id="deadSound" src="files/hatemercy.wav"></audio>
 
     <script>
         const container = document.getElementById('container');
@@ -82,13 +83,7 @@
                 draggableRect.y + draggableRect.height > textRect.y) {
                 floatingText.textContent = 'DEAD';
                 floatingText.style.backgroundColor = 'red';
-                // Create an Audio object
-                var audio = new Audio('files/hatemercy.wav');
-                audio.volume = 0.5; // Adjust the volume (0.0 to 1.0)
-                audio.playbackRate = 1.0; // Adjust the playback rate (1.0 is normal speed)
-                audio.addEventListener('canplaythrough', function () {
-                audio.play();
-                });
+                deadSound.play(); 
             }
         });
 
