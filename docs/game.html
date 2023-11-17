@@ -82,6 +82,11 @@
                 draggableRect.y + draggableRect.height > textRect.y) {
                 floatingText.textContent = 'DEAD';
                 floatingText.style.backgroundColor = 'red';
+                // Create an Audio object
+                var audio = new Audio('path/to/your/file.wav');
+
+                // Play the audio
+                audio.play();
             }
         });
 
