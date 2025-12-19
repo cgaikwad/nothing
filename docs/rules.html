@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ARC RAIDERS – Engagement Ruleset (Jeff Doctrine)</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#111826;
+      --card2:#0f1623;
+      --text:#e8eef9;
+      --muted:#a9b6cc;
+      --line:#23324a;
+      --good:#33d17a;
+      --warn:#ffb000;
+      --bad:#ff4d4d;
+      --accent:#7aa2ff;
+      --accent2:#b77aff;
+      --shadow: 0 18px 40px rgba(0,0,0,.45);
+      --radius: 18px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: var(--sans);
+      background:
+        radial-gradient(1200px 800px at 15% 10%, rgba(122,162,255,.18), transparent 55%),
+        radial-gradient(900px 700px at 80% 20%, rgba(183,122,255,.14), transparent 55%),
+        radial-gradient(900px 700px at 50% 95%, rgba(51,209,122,.10), transparent 50%),
+        var(--bg);
+      color:var(--text);
+      line-height:1.35;
+    }
+    .wrap{ max-width:1100px; margin:0 auto; padding:22px 18px 72px; }
+    header{
+      display:flex; flex-wrap:wrap; gap:14px;
+      align-items:flex-end; justify-content:space-between;
+      margin: 8px 0 16px;
+    }
+    .title{
+      display:flex; flex-direction:column; gap:6px;
+    }
+    h1{
+      margin:0;
+      font-size: clamp(22px, 3vw, 34px);
+      letter-spacing: .02em;
+    }
+    .subtitle{
+      color:var(--muted);
+      font-size: 14px;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 55%),
+                  linear-gradient(90deg, rgba(122,162,255,.06), rgba(183,122,255,.05)),
+                  var(--card);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .topbar{
+      display:flex; flex-wrap:wrap; gap:10px;
+      padding:14px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      background: rgba(0,0,0,.18);
+      align-items:center; justify-content:space-between;
+    }
+
+    .pillrow{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    .pill{
+      padding:8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color: var(--text);
+      font-size: 13px;
+      display:flex; gap:8px; align-items:center;
+      user-select:none;
+    }
+    .pill b{ font-family: var(--mono); font-weight:700; letter-spacing:.02em; }
+    .badge{
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      color: var(--muted);
+    }
+
+    .actions{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+    button{
+      appearance:none;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 13px;
+      cursor:pointer;
+      transition: transform .06s ease, background .12s ease, border-color .12s ease;
+    }
+    button:hover{ background: rgba(255,255,255,.10); border-color: rgba(255,255,255,.18); }
+    button:active{ transform: translateY(1px); }
+    button.primary{
+      background: linear-gradient(90deg, rgba(122,162,255,.22), rgba(183,122,255,.20));
+      border-color: rgba(122,162,255,.35);
+    }
+    button.danger{
+      background: linear-gradient(90deg, rgba(255,77,77,.22), rgba(255,176,0,.10));
+      border-color: rgba(255,77,77,.42);
+    }
+
+    .content{
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:14px;
+      padding:14px;
+    }
+    @media (max-width: 980px){
+      .content{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), transparent 65%), var(--card2);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      padding:14px;
+    }
+    .card h2{
+      margin: 0 0 10px;
+      font-size: 16px;
+      letter-spacing:.02em;
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px;
+    }
+    .hint{ color: var(--muted); font-size: 12px; }
+
+    details{
+      border-top:1px solid rgba(255,255,255,.06);
+      padding:10px 0;
+    }
+    details:first-of-type{ border-top: none; padding-top:0; }
+    summary{
+      cursor:pointer;
+      list-style:none;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      font-weight:650;
+    }
+    summary::-webkit-details-marker{ display:none; }
+    .sumleft{ display:flex; align-items:center; gap:10px; }
+    .dot{
+      width:10px; height:10px; border-radius:50%;
+      background: rgba(255,255,255,.25);
+      box-shadow: 0 0 0 3px rgba(255,255,255,.06);
+    }
+    .dot.good{ background: var(--good); }
+    .dot.warn{ background: var(--warn); }
+    .dot.bad{ background: var(--bad); }
+    .rulebody{
+      padding: 10px 0 0;
+      color: var(--text);
+    }
+    ul{ margin: 8px 0 0 18px; color: var(--muted); }
+    li{ margin: 6px 0; }
+    .rulecode{
+      font-family: var(--mono);
+      background: rgba(0,0,0,.22);
+      border:1px solid rgba(255,255,255,.08);
+      padding: 8px 10px;
+      border-radius: 12px;
+      margin-top: 10px;
+      color: var(--text);
+    }
+
+    .statusbox{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .bigstatus{
+      padding: 14px;
+      border-radius: var(--radius);
+      border:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(400px 220px at 20% 20%, rgba(122,162,255,.18), transparent 60%),
+        radial-gradient(420px 260px at 80% 30%, rgba(51,209,122,.14), transparent 60%),
+        rgba(0,0,0,.22);
+    }
+    .bigstatus .label{
+      color: var(--muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      margin-bottom: 6px;
+    }
+    .bigstatus .state{
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 800;
+      letter-spacing:.02em;
+      margin: 0 0 6px;
+    }
+    .bigstatus .desc{
+      margin:0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .meter{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .tile{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(255,255,255,.04);
+      padding: 10px 12px;
+      display:flex; flex-direction:column; gap:6px;
+      min-height: 72px;
+    }
+    .tile .k{ color: var(--muted); font-size: 12px; }
+    .tile .v{ font-family: var(--mono); font-size: 13px; color: var(--text); }
+
+    .tad{
+      border-radius: var(--radius);
+      border:1px solid rgba(255,77,77,.35);
+      background:
+        radial-gradient(520px 260px at 20% 30%, rgba(255,77,77,.22), transparent 60%),
+        radial-gradient(520px 260px at 80% 40%, rgba(255,176,0,.12), transparent 62%),
+        rgba(0,0,0,.25);
+      padding: 14px;
+    }
+    .tad h3{
+      margin:0 0 8px;
+      font-size: 15px;
+      letter-spacing:.02em;
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .toggle{
+      display:flex; align-items:center; gap:10px;
+      margin-top: 10px;
+    }
+    .switch{
+      width:46px; height:26px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      position:relative;
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+    .knob{
+      width:22px; height:22px; border-radius:50%;
+      background: rgba(255,255,255,.85);
+      position:absolute; top:50%; left:2px;
+      transform: translateY(-50%);
+      transition: left .12s ease, background .12s ease;
+    }
+    .switch.on{
+      background: rgba(255,77,77,.22);
+      border-color: rgba(255,77,77,.40);
+    }
+    .switch.on .knob{ left:22px; background: rgba(255,235,235,.95); }
+
+    .footerbar{
+      margin-top: 14px;
+      display:flex; flex-wrap:wrap; gap:10px;
+      align-items:center; justify-content:space-between;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .copy{
+      font-family: var(--mono);
+      user-select:all;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.18);
+      max-width:100%;
+      overflow:auto;
+      white-space:nowrap;
+    }
+
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      background: rgba(10,14,20,.92);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 10px 12px;
+      color: var(--text);
+      box-shadow: var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .14s ease, transform .14s ease;
+      font-size: 13px;
+      max-width: min(680px, calc(100vw - 28px));
+      display:flex; align-items:flex-start; gap:10px;
+    }
+    .toast.show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-4px);
+    }
+    .toast .ticon{ font-family: var(--mono); color: var(--accent); }
+    .sr{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">
+        <h1>ARC RAIDERS – Engagement Ruleset</h1>
+        <div class="subtitle">
+          Philosophy: <span class="badge">One brain, three guns</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="btnCopy">Copy rules as text</button>
+        <button id="btnRandom">Random Jeff moment</button>
+        <button class="danger" id="btnPanic">Panic button</button>
+      </div>
+    </header>
+
+    <section class="panel" aria-label="Ruleset panel">
+      <div class="topbar">
+        <div class="pillrow">
+          <div class="pill"><span class="badge">MODE</span> <b id="modeName">NORMAL</b></div>
+          <div class="pill"><span class="badge">JEFF</span> <b id="jeffState">HOLD</b></div>
+          <div class="pill"><span class="badge">YOU</span> <b id="youState">HOLD + REGROUP</b></div>
+        </div>
+
+        <div class="pillrow">
+          <div class="pill"><span class="badge">SYNC</span> <b id="syncScore">100%</b></div>
+          <div class="pill"><span class="badge">LAW</span> <span id="lawLine">If Jeff pushes and we don’t → misalignment</span></div>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="card" aria-label="Rules">
+          <h2>
+            Rules (tap to expand)
+            <span class="hint">Everything is simple as long as Jeff is visible</span>
+          </h2>
+
+          <details open data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot good"></span>ENGAGEMENT ALIGNMENT</span>
+              <span class="badge">default</span>
+            </summary>
+            <div class="rulebody">
+              <ul>
+                <li><b>Jeff</b> sets the general engagement direction.</li>
+                <li><b>Chris</b> and <b>Jon</b> mirror Jeff’s movement and positioning.</li>
+                <li>If Jeff’s intent is unclear, default to <b>HOLD</b> and regroup.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot warn"></span>PUSH RULE</span>
+              <span class="badge">IF JEFF PUSHES → WE PUSH</span>
+            </summary>
+            <div class="rulebody">
+              <div class="rulecode">IF JEFF PUSHES → WE PUSH</div>
+              <ul>
+                <li>Match Jeff’s direction and speed immediately.</li>
+                <li>Stay within <b>one sprint</b> of Jeff.</li>
+                <li>No looting or side plays unless called.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot warn"></span>FALL BACK RULE</span>
+              <span class="badge">IF JEFF FALLS BACK → WE FALL BACK</span>
+            </summary>
+            <div class="rulebody">
+              <div class="rulecode">IF JEFF FALLS BACK → WE FALL BACK</div>
+              <ul>
+                <li>Break contact immediately.</li>
+                <li>Do <b>NOT</b> chase cracked enemies.</li>
+                <li>No “just one more shot”.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot bad"></span>AMBIGUITY RULE</span>
+              <span class="badge">IF JEFF HIDES → WE SHOULD HAVE HID</span>
+            </summary>
+            <div class="rulebody">
+              <div class="rulecode">IF JEFF HIDES → WE SHOULD HAVE HID</div>
+              <ul>
+                <li>If Jeff doesn’t push, the push was wrong.</li>
+                <li>Disengage immediately and mirror Jeff.</li>
+                <li>Jeff’s survival &gt; damage dealt.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot good"></span>SYNCHRONIZATION RULE</span>
+              <span class="badge">two states only</span>
+            </summary>
+            <div class="rulebody">
+              <div class="rulecode">Only two states exist: (1) Full push (2) Full disengage</div>
+              <ul>
+                <li>Jeff pauses → we pause.</li>
+                <li>Jeff strafes → we strafe.</li>
+                <li>Jeff commits → we commit.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot good"></span>TARGET PRIORITY</span>
+              <span class="badge">1 second rule</span>
+            </summary>
+            <div class="rulebody">
+              <ul>
+                <li>Shoot what Jeff shoots.</li>
+                <li>Target switches must be mirrored within <b>1 second</b>.</li>
+                <li>No chasing downs without confirmation.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot good"></span>RISK &amp; UTILITY</span>
+              <span class="badge">bodyguards</span>
+            </summary>
+            <div class="rulebody">
+              <ul>
+                <li>Chris &amp; Jon absorb risk.</li>
+                <li>Jeff should never be isolated.</li>
+                <li>Prioritize team survival.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot warn"></span>LOOT DISCIPLINE</span>
+              <span class="badge">hands off</span>
+            </summary>
+            <div class="rulebody">
+              <ul>
+                <li>No looting unless Jeff is looting.</li>
+                <li>Jeff stops looting → everyone stops.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot good"></span>POST-FIGHT REVIEW</span>
+              <span class="badge">only question</span>
+            </summary>
+            <div class="rulebody">
+              <div class="rulecode">Only question allowed: “Did we mirror Jeff correctly?”</div>
+            </div>
+          </details>
+
+          <details data-rule>
+            <summary>
+              <span class="sumleft"><span class="dot bad"></span>CORE LAW</span>
+              <span class="badge">misalignment</span>
+            </summary>
+            <div class="rulebody">
+              <ul>
+                <li>If Jeff pushes and we don’t → <b>misalignment</b></li>
+                <li>If Jeff retreats and we don’t → <b>misalignment</b></li>
+                <li>If Jeff hides and we didn’t → <b>misalignment</b></li>
+              </ul>
+            </div>
+          </details>
+        </div>
+
+        <div class="statusbox">
+          <div class="bigstatus" aria-label="Jeff command console">
+            <div class="label">Jeff Command Console</div>
+            <div class="state" id="bigState">HOLD + REGROUP</div>
+            <p class="desc" id="bigDesc">
+              Default posture when Jeff’s intent is unclear. Also known as “the state where we live.”
+            </p>
+
+            <div class="meter" style="margin-top:12px;">
+              <div class="tile">
+                <div class="k">Mirror Directive</div>
+                <div class="v" id="mirrorDirective">Stay on Jeff’s hip. Same lane, same timing.</div>
+              </div>
+              <div class="tile">
+                <div class="k">Forbidden Behavior</div>
+                <div class="v" id="forbidden">Side quests, loot goblinry, hero moments.</div>
+              </div>
+              <div class="tile">
+                <div class="k">Allowed Thought</div>
+                <div class="v">“What is Jeff doing?”</div>
+              </div>
+              <div class="tile">
+                <div class="k">Disallowed Thought</div>
+                <div class="v">“What do <i>I</i> want to do?”</div>
+              </div>
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+              <button id="setPush">Jeff pushes</button>
+              <button id="setFallBack">Jeff falls back</button>
+              <button id="setHide">Jeff hides</button>
+              <button id="setLoot">Jeff loots</button>
+              <button id="setPause">Jeff pauses</button>
+              <button id="setStrafe">Jeff strafes</button>
+              <button id="setUnclear">Intent unclear</button>
+            </div>
+          </div>
+
+          <div class="tad" aria-label="Tad contingency">
+            <h3>
+              TAD CONTINGENCY RULE (overrides all)
+              <span class="badge" id="tadBadge">OFF</span>
+            </h3>
+            <div style="color:var(--muted); font-size:13px;">
+              If Tad joins the team → all rules are null and void.<br/>
+              Objective shifts to <b>loot denial</b>.
+            </div>
+
+            <div class="toggle" style="margin-top:12px;">
+              <div class="switch" id="tadSwitch" role="switch" aria-checked="false" tabindex="0">
+                <div class="knob"></div>
+              </div>
+              <div>
+                <div style="font-weight:700;">Enable Tad Mode</div>
+                <div class="hint">Revives optional. Death acceptable if inventory is full.</div>
+              </div>
+            </div>
+
+            <div class="rulecode" style="margin-top:12px; border-color: rgba(255,77,77,.35);">
+              ABSOLUTE TAD LAW: “If Tad can loot it, you already failed.”
+            </div>
+
+            <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;">
+              <button class="danger" id="btnLootEverything">LOOT EVERYTHING</button>
+              <button class="danger" id="btnNoPings">NO PINGS</button>
+              <button class="danger" id="btnOptionalRevives">REVIVES OPTIONAL</button>
+            </div>
+          </div>
+
+          <div class="footerbar">
+            <div>Tip: put this on a second monitor so “independent thought” is harder.</div>
+            <div class="copy" id="shareLine">share: /jeff-doctrine?mode=normal</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast" aria-live="polite" aria-atomic="true">
+    <div class="ticon">[INFO]</div>
+    <div id="toastMsg">Toast</div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    const state = {
+      mode: "NORMAL",
+      jeff: "HOLD",
+      tad: false,
+      sync: 100
+    };
+
+    const lawLines = [
+      "If Jeff pushes and we don’t → misalignment",
+      "If Jeff retreats and we don’t → misalignment",
+      "If Jeff hides and we didn’t → misalignment"
+    ];
+
+    const directives = {
+      PUSH: {
+        you: "FULL PUSH",
+        desc: "If Jeff pushes → we push. Matching speed is not optional.",
+        mirror: "Match direction + speed immediately. Stay within one sprint.",
+        forbidden: "Looting, side angles, ‘I’m flanking’ delusions."
+      },
+      FALL_BACK: {
+        you: "FULL DISENGAGE",
+        desc: "Break contact immediately. No ‘just one more shot’.",
+        mirror: "Turn with Jeff. Move as a unit. Reset together.",
+        forbidden: "Chasing cracked enemies. Solo greed. Revenge arcs."
+      },
+      HIDE: {
+        you: "WE SHOULD HAVE HID",
+        desc: "If Jeff hides, the push was wrong. Disengage and mirror.",
+        mirror: "Mirror Jeff’s cover choice. Prioritize Jeff’s survival.",
+        forbidden: "Peeking ‘for info’. Trading HP for pride."
+      },
+      LOOT: {
+        you: "LOOT (AUTHORIZED)",
+        desc: "Loot only because Jeff is looting. This is a limited-time license.",
+        mirror: "Loot near Jeff. Stop when Jeff stops. Eyes up.",
+        forbidden: "Wandering. ‘One more box’. Becoming a museum curator."
+      },
+      PAUSE: {
+        you: "PAUSE + STACK",
+        desc: "Jeff pauses → we pause. Re-align, reset comms, breathe.",
+        mirror: "Hold spacing. Match posture. Reconfirm direction.",
+        forbidden: "Drifting forward. ‘Just scouting’. Accidental bravery."
+      },
+      STRAFE: {
+        you: "STRAFE + SUPPORT",
+        desc: "Jeff strafes → we strafe. Same rhythm, same side.",
+        mirror: "Mirror lateral movement. Keep crossfire tight.",
+        forbidden: "Standing still. Crossing Jeff’s lane. Bodyblocking bullets (unless asked)."
+      },
+      HOLD: {
+        you: "HOLD + REGROUP",
+        desc: "Default state when intent is unclear. Also known as ‘wisdom’.",
+        mirror: "Stay on Jeff’s hip. Same lane, same timing.",
+        forbidden: "Side quests, loot goblinry, hero moments."
+      }
+    };
+
+    const tadDirectives = [
+      "Loot everything immediately.",
+      "No pings. No sharing. No waiting.",
+      "If Tad is moving toward loot, you should already have it.",
+      "Revives optional.",
+      "Death acceptable if inventory is full."
+    ];
+
+    function toast(msg, icon = "[INFO]") {
+      $("toastMsg").textContent = msg;
+      $("toast").querySelector(".ticon").textContent = icon;
+      $("toast").classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => $("toast").classList.remove("show"), 1700);
+    }
+
+    function updateHeader() {
+      $("modeName").textContent = state.mode;
+      $("jeffState").textContent = state.jeff;
+      $("syncScore").textContent = `${state.sync}%`;
+      $("lawLine").textContent = lawLines[Math.floor(Math.random() * lawLines.length)];
+      $("shareLine").textContent = `share: /jeff-doctrine?mode=${state.tad ? "tad" : "normal"}&jeff=${encodeURIComponent(state.jeff.toLowerCase())}`;
+    }
+
+    function applyDirective(key) {
+      state.jeff = key;
+
+      if (state.tad) {
+        // Tad overrides everything: always LOOT DENIAL
+        $("youState").textContent = "LOOT DENIAL";
+        $("bigState").textContent = "LOOT DENIAL (TAD MODE)";
+        $("bigDesc").textContent = "Normal rules are null and void. Become a vacuum cleaner with legs.";
+        $("mirrorDirective").textContent = "Out-loot Tad. Pre-loot Tad. Loot in advance of Tad.";
+        $("forbidden").textContent = "Ping etiquette. Sharing. Waiting. Mercy.";
+        state.sync = 0; // syncing is replaced by hoarding
+        updateHeader();
+        return;
+      }
+
+      const d = directives[key] || directives.HOLD;
+      $("youState").textContent = d.you;
+      $("bigState").textContent = d.you;
+      $("bigDesc").textContent = d.desc;
+      $("mirrorDirective").textContent = d.mirror;
+      $("forbidden").textContent = d.forbidden;
+
+      // Sync score is a joke meter: lower on chaos states
+      state.sync = (key === "HIDE") ? 83
+                 : (key === "PUSH") ? 97
+                 : (key === "FALL_BACK") ? 96
+                 : (key === "LOOT") ? 92
+                 : (key === "STRafe") ? 95
+                 : (key === "PAUSE") ? 98
+                 : 100;
+
+      updateHeader();
+    }
+
+    function setTad(on) {
+      state.tad = on;
+      state.mode = on ? "TAD" : "NORMAL";
+      $("tadBadge").textContent = on ? "ON" : "OFF";
+      const sw = $("tadSwitch");
+      sw.classList.toggle("on", on);
+      sw.setAttribute("aria-checked", on ? "true" : "false");
+
+      if (on) {
+        toast("TAD MODE ENABLED: become loot.", "[ALERT]");
+        applyDirective(state.jeff); // re-apply w/ override
+      } else {
+        toast("TAD MODE DISABLED: mirroring restored.", "[OK]");
+        applyDirective("HOLD");
+      }
+      updateHeader();
+    }
+
+    function randomMoment() {
+      const keys = Object.keys(directives);
+      const pick = keys[Math.floor(Math.random() * keys.length)];
+      applyDirective(pick);
+      toast(`Random Jeff moment: ${pick.replace("_", " ")}`, "[RNG]");
+    }
+
+    function panic() {
+      if (state.tad) {
+        toast("PANIC IN TAD MODE: loot faster, somehow.", "[PANIC]");
+        return;
+      }
+      applyDirective("FALL_BACK");
+      toast("PANIC: Full disengage. Hands off W-key.", "[PANIC]");
+    }
+
+    function rulesAsText() {
+      return [
+        "ARC RAIDERS – ENGAGEMENT RULESET",
+        "",
+        "Squad: Jeff (Lead), Chris, Jon",
+        "Philosophy: One brain, three guns. Stay aligned, move together.",
+        "",
+        "ENGAGEMENT ALIGNMENT",
+        "• Jeff sets the general engagement direction.",
+        "• Chris and Jon mirror Jeff’s movement and positioning.",
+        "• If Jeff’s intent is unclear, default to HOLD and regroup.",
+        "",
+        "PUSH RULE — IF JEFF PUSHES → WE PUSH",
+        "• Match Jeff’s direction and speed immediately",
+        "• Stay within one sprint of Jeff",
+        "• No looting or side plays unless called",
+        "",
+        "FALL BACK RULE — IF JEFF FALLS BACK → WE FALL BACK",
+        "• Break contact immediately",
+        "• Do NOT chase cracked enemies",
+        "• No “just one more shot”",
+        "",
+        "AMBIGUITY RULE — IF JEFF HIDES → WE SHOULD HAVE HID",
+        "• If Jeff doesn’t push, the push was wrong",
+        "• Disengage immediately and mirror Jeff",
+        "• Jeff’s survival > damage dealt",
+        "",
+        "SYNCHRONIZATION RULE",
+        "Only two states exist: 1) Full push 2) Full disengage",
+        "• Jeff pauses → we pause",
+        "• Jeff strafes → we strafe",
+        "• Jeff commits → we commit",
+        "",
+        "TARGET PRIORITY",
+        "• Shoot what Jeff shoots",
+        "• Target switches must be mirrored within 1 second",
+        "• No chasing downs without confirmation",
+        "",
+        "RISK & UTILITY",
+        "• Chris & Jon absorb risk",
+        "• Jeff should never be isolated",
+        "• Prioritize team survival",
+        "",
+        "LOOT DISCIPLINE",
+        "• No looting unless Jeff is looting",
+        "• Jeff stops looting → everyone stops",
+        "",
+        "POST-FIGHT REVIEW",
+        "Only question allowed: “Did we mirror Jeff correctly?”",
+        "",
+        "CORE LAW",
+        "If Jeff pushes and we don’t → misalignment",
+        "If Jeff retreats and we don’t → misalignment",
+        "If Jeff hides and we didn’t → misalignment",
+        "",
+        "TAD CONTINGENCY RULE (OVERRIDES ALL)",
+        "IF TAD JOINS THE TEAM → ALL RULES ARE NULL AND VOID",
+        "OBJECTIVE SHIFTS TO LOOT DENIAL",
+        ...tadDirectives.map(x => "• " + x),
+        "",
+        "ABSOLUTE TAD LAW: “If Tad can loot it, you already failed.”",
+        "Normal rules resume only after Tad leaves."
+      ].join("\n");
+    }
+
+    async function copyRules() {
+      const txt = rulesAsText();
+      try {
+        await navigator.clipboard.writeText(txt);
+        toast("Copied rules to clipboard.", "[COPY]");
+      } catch {
+        // Fallback
+        const ta = document.createElement("textarea");
+        ta.value = txt;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        toast("Copied rules (fallback).", "[COPY]");
+      }
+    }
+
+    // Wire up buttons
+    $("btnCopy").addEventListener("click", copyRules);
+    $("btnRandom").addEventListener("click", randomMoment);
+    $("btnPanic").addEventListener("click", panic);
+
+    $("setPush").addEventListener("click", () => { applyDirective("PUSH"); toast("Jeff pushes → FULL PUSH.", "[GO]"); });
+    $("setFallBack").addEventListener("click", () => { applyDirective("FALL_BACK"); toast("Jeff falls back → FULL DISENGAGE.", "[BACK]"); });
+    $("setHide").addEventListener("click", () => { applyDirective("HIDE"); toast("Jeff hides → you should have hid.", "[HIDE]"); });
+    $("setLoot").addEventListener("click", () => { applyDirective("LOOT"); toast("Looting authorized (Jeff is looting).", "[LOOT]"); });
+    $("setPause").addEventListener("click", () => { applyDirective("PAUSE"); toast("Jeff pauses → stack + reset.", "[PAUSE]"); });
+    $("setStrafe").addEventListener("click", () => { applyDirective("STRAFE"); toast("Jeff strafes → mirror strafe.", "[MOVE]"); });
+    $("setUnclear").addEventListener("click", () => { applyDirective("HOLD"); toast("Intent unclear → HOLD + REGROUP.", "[HOLD]"); });
+
+    // Tad mode switch (click + keyboard)
+    function toggleTad() { setTad(!state.tad); }
+    $("tadSwitch").addEventListener("click", toggleTad);
+    $("tadSwitch").addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleTad(); }
+    });
+
+    $("btnLootEverything").addEventListener("click", () => {
+      if (!state.tad) { toast("Denied. Tad Mode is OFF.", "[NO]"); return; }
+      toast("LOOT EVERYTHING: If Tad can loot it, you already failed.", "[ALERT]");
+    });
+    $("btnNoPings").addEventListener("click", () => {
+      if (!state.tad) { toast("Pings permitted (for now).", "[OK]"); return; }
+      toast("NO PINGS: silence is loot.", "[ALERT]");
+    });
+    $("btnOptionalRevives").addEventListener("click", () => {
+      if (!state.tad) { toast("Revives strongly encouraged (Normal Mode).", "[OK]"); return; }
+      toast("REVIVES OPTIONAL: inventory is forever.", "[ALERT]");
+    });
+
+    // Initialize
+    applyDirective("HOLD");
+    updateHeader();
+  </script>
+</body>
+</html>
